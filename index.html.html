@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Enactus Obour Institutes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFC20E;
+    --fg: #161616;
+    --row-bg: #161616;
+    --row-fg: #FFC20E;
+    --row-sub: #d9d2bd;
+    --focus: #ffffff;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141414; --fg: #FFC20E; --row-bg: #FFC20E; --row-fg: #161616; --row-sub: #3b3320; --focus: #ffffff;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141414; --fg: #FFC20E; --row-bg: #FFC20E; --row-fg: #161616; --row-sub: #3b3320; --focus: #ffffff;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "Cairo", "Segoe UI", Tahoma, Arial, sans-serif;
+    line-height: 1.5;
+  }
+  main { max-width: 520px; margin: 0 auto; padding: 40px 20px 56px; }
+
+  .name {
+    direction: ltr;
+    text-align: left;
+    margin: 0 0 14px;
+    font-weight: 900;
+    font-size: clamp(3rem, 17vw, 5.2rem);
+    line-height: .92;
+    letter-spacing: -0.03em;
+  }
+  .name span { display: block; }
+  .name .small { font-size: .42em; letter-spacing: 0; line-height: 1.2; font-weight: 600; margin-top: .35em; }
+  .tagline { margin: 0 0 32px; font-size: 1.1rem; font-weight: 600; max-width: 30ch; }
+
+  ul.links { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  a.row {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 14px 18px;
+    background: var(--row-bg); color: var(--row-fg);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: transform .15s ease;
+  }
+  a.row:hover { transform: translateX(-4px); }
+  a.row:focus-visible, button:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .row .t { display: block; font-weight: 900; font-size: 1.15rem; direction: ltr; text-align: right; }
+  .row .d { display: block; font-size: .88rem; opacity: .85; }
+  .row svg { flex: none; width: 20px; height: 20px; transform: scaleX(-1); }
+
+  .qr-btn {
+    margin-top: 28px; width: 100%;
+    font: inherit; font-weight: 900; font-size: 1.05rem;
+    background: transparent; color: var(--fg);
+    border: 3px solid var(--fg); border-radius: 4px;
+    padding: 12px 18px; cursor: pointer;
+  }
+  .qr-btn:hover { background: var(--fg); color: var(--bg); }
+
+  dialog {
+    border: 0; border-radius: 6px; padding: 24px; width: min(340px, 90vw);
+    background: #fff; color: #161616; text-align: center;
+  }
+  dialog::backdrop { background: rgba(0,0,0,.65); }
+  dialog h2 { margin: 0 0 4px; font-size: 1.15rem; font-weight: 900; }
+  dialog p { margin: 0 0 16px; font-size: .9rem; color: #555; }
+  #qr { display: flex; justify-content: center; padding: 12px; background: #fff; border: 3px solid #FFC20E; border-radius: 4px; }
+  #qr img, #qr canvas { max-width: 100%; height: auto; }
+  dialog button {
+    margin-top: 16px; font: inherit; font-weight: 900; cursor: pointer;
+    background: #161616; color: #FFC20E; border: 0; border-radius: 4px; padding: 10px 28px;
+  }
+  @media (prefers-reduced-motion: reduce) { a.row { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <h1 class="name">
+    <span>Enactus</span>
+    <span>Obour</span>
+    <span class="small">Institutes</span>
+  </h1>
+  <p class="tagline">كل صفحاتنا وحساباتنا في مكان واحد</p>
+
+  <ul class="links" id="links"></ul>
+
+  <button class="qr-btn" id="qrOpen" type="button">اعرض QR Code الصفحة</button>
+</main>
+
+<dialog id="qrDialog" aria-labelledby="qrTitle">
+  <h2 id="qrTitle">امسح الكود لفتح الصفحة</h2>
+  <p>خد سكرين شوت للكود أو اعرضه على الشاشة.</p>
+  <div id="qr"></div>
+  <button id="qrClose" type="button">إغلاق</button>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  // عدّل اللينكات هنا: title = اسم المنصة، desc = وصف قصير، url = اللينك
+  var LINKS = [
+    { title: "Join us",   desc: "سجّل وانضم لفريق Enactus",     url: "https://forms.gle/9pRdp5XTb6takgzCA" },
+    { title: "Instagram", desc: "صور وأخبار الفعاليات",         url: "https://instagram.com/enactus_obour" },
+    { title: "Facebook",  desc: "صفحتنا الرسمية على فيسبوك",   url: "https://www.facebook.com/profile.php?id=61587016187863" },
+    { title: "TikTok",    desc: "فيديوهات من جوه الفريق",       url: "https://www.tiktok.com/@enactus_oi" }
+  ];
+
+  var chevron = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
+  var ul = document.getElementById("links");
+  LINKS.forEach(function (l) {
+    var li = document.createElement("li");
+    var a = document.createElement("a");
+    a.className = "row";
+    a.href = l.url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.innerHTML = '<span><span class="t"></span><span class="d"></span></span>' + chevron;
+    a.querySelector(".t").textContent = l.title;
+    a.querySelector(".d").textContent = l.desc;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+
+  var dlg = document.getElementById("qrDialog");
+  var made = false;
+  document.getElementById("qrOpen").addEventListener("click", function () {
+    if (!made) {
+      try {
+        new QRCode(document.getElementById("qr"), {
+          text: window.location.href,
+          width: 240, height: 240,
+          colorDark: "#161616", colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.M
+        });
+        made = true;
+      } catch (e) {
+        document.getElementById("qr").textContent = "تعذّر إنشاء الكود";
+      }
+    }
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
+  });
+  document.getElementById("qrClose").addEventListener("click", function () { dlg.close(); });
+  dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
+</script>
+</body>
+</html>
